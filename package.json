@@ -1,0 +1,25 @@
+{
+  "name": "blog-management-system",
+  "version": "1.0.0",
+  "description": "1.pagination (offset pagination)\r 2.caching(redis)\r 3.api rate limit\r 4.database aggregation (api calls complex query)=>indexing\r 5.logger",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "joi": "^17.13.3",
+    "mongoose": "^8.4.4",
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.9.14"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
