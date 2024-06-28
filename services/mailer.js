@@ -3,7 +3,7 @@ const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
+  port: Number(process.env.SMTP_PORT),
   secure: true, // Use `true` for port 465, `false` for all other ports
   auth: {
     user: process.env.SMTP_USER,
@@ -19,12 +19,12 @@ transporter.verify(function (error, success) {
   }
 });
 
-const mailer = async (email) => {
+const mailer = async (email, subject, body) => {
   const info = await transporter.sendMail({
     from: '"Sujan Tamang" <suzanyba079@gmail.com',
     to: email, // list of receivers
-    subject: "Status", // Subject line
-    html: "<b>User Signup Successful</b>",
+    subject, // Subject line
+    html: `<b>${body}</b>`,
   });
 
   return info.messageId;

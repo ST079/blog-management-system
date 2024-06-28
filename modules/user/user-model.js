@@ -11,6 +11,7 @@ const userModel = new Schema({
     default: "user",
     required: true,
   },
+  token: String,
   isActive: { type: Boolean, required: true, default: true },
   createdAt: { type: Date, degault: Date.now() },
   updatedAt: { type: Date, degault: Date.now() },

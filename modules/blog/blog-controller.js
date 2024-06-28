@@ -4,25 +4,25 @@ const bookmarkModel = require("../bookmark/bookmark-model");
 
 //create
 const create = (payload) => {
-  return userModel.create(payload);
+  return blogModel.create(payload);
 };
 
 //Search
 const getAll = () => {
-  return userModel.find();
+  return blogModel.find();
 };
 const getById = (_id) => {
-  return userModel.findOne({ _id });
+  return blogModel.findOne({ _id });
 };
 
 //update
 const updateById = (_id, payload) => {
-  return userModel.updateOne({ _id }, payload);
+  return blogModel.updateOne({ _id }, payload);
 };
 
 //delete
 const deleteById = (_id) => {
-  return userModel.deleteOne({ _id });
+  return blogModel.deleteOne({ _id });
 };
 
 const bookMark = (payload) => {

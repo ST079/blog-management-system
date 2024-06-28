@@ -1,14 +1,18 @@
 const userModel = require("./user-model");
 const { mailer } = require("../../services/mailer");
 const { hashPassword, comparePassword } = require("../../utils/bcrypt");
-const { signJwt } = require("../../utils/token");
+const { signJwt, generateRandomToken } = require("../../utils/token");
 
 //user
 const register = async (payload) => {
   payload.password = hashPassword(payload.password);
   const user = await userModel.create(payload);
   if (!user) throw new Error("Registeration Failed");
-  const result = await mailer(user.email);
+  const result = await mailer(
+    user.email,
+    "User SignUp",
+    "User SignUp sucessfull :)"
+  );
   if (result) return "Regestration Completed";
 };
 
@@ -33,6 +37,10 @@ const login = async (payload) => {
   return token;
 };
 
+const create = (payload) => {
+  return userModel.create(payload);
+};
+
 const getAll = () => {
   return userModel.find();
 };
@@ -45,19 +53,72 @@ const updateById = (_id, payload) => {
   return userModel.updateOne({ _id }, payload);
 };
 
-const forgotPassword = (payload) => {};
+//forgot password
+const fpToken = async (payload) => {
+  const { email } = payload;
+  if (!email) throw new Error("Email is Required!!!");
+  const user = await userModel.findOne({ email });
+  if (!user) throw new Error("User doesn't exist");
+  //generate token
+  const randomToken = generateRandomToken();
+  //store token in db
+  await userModel.updateOne({ email }, { token: randomToken });
+  const isEmailSent = await mailer(
+    user.email,
+    "Forget Password",
+    `Your token is ${randomToken}`
+  );
+  if (isEmailSent) return "Forgot Password token sent successfully";
+};
+
+const verifyFpToken = async (payload) => {
+  const { token, password, email } = payload;
+  if (!token || !password || !email) throw new Error("Something went wrong!!");
+  const user = await userModel.findOne({ email });
+  if (!user) throw new Error("User not found!");
+  const { token: verifyToken } = user;
+  if (token != verifyToken) throw new Error("Token mismatched");
+  await userModel.updateOne(
+    { email },
+    { password: hashPassword(password) },
+    { token: "" }
+  );
+  return "Password Updated Successfully";
+};
 
 //admin
-const resetPassword = (userId, payload) => {};
-const changePassword = (userId, payload) => {};
+const resetPassword = (payload) => {
+  const { userId, password } = payload;
+  if (!userId || !password) throw new Error("UserId or Password is required");
+  return userModel.updateOne(
+    { _id: userId },
+    { password: hashPassword(password) }
+  );
+};
+const changePassword = async (payload) => {
+  const { userId, oldPassword, newPassword } = payload;
+  if (!userId || !oldPassword || !newPassword)
+    throw new Error("Something went wrong");
+  const user = await userModel.findOne({ _id: userId }).select("+password");
+  if (!user) throw new Error("User not found!");
+  const isValidOldPassword = comparePassword(oldPassword, user.password);
+  if (!isValidOldPassword) throw new Error("Passwotd didnot match");
+  await userModel.updateOne(
+    { _id: userId },
+    { password: hashPassword(newPassword) }
+  );
+  return "Password changed successfully";
+};
 
 module.exports = {
   register,
   login,
+  create,
   getAll,
   getById,
   updateById,
-  forgotPassword,
+  fpToken,
+  verifyFpToken,
   resetPassword,
   changePassword,
 };

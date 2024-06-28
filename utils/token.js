@@ -15,4 +15,8 @@ const verifyJwt = (token) => {
   return jwt.verify(token, process.env.JWT_SECRET);
 };
 
-module.exports = { signJwt, verifyJwt };
+const generateRandomToken = () => {
+  return Math.floor(100000 + Math.random() * 900000);
+};
+
+module.exports = { signJwt, verifyJwt, generateRandomToken };
