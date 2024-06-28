@@ -1,9 +1,12 @@
 const router = require("express").Router();
 const { json } = require("express");
 const userController = require("./user-controller");
-router.get("/", (req, res, next) => {
+const { checkRole } = require("../../utils/session-manager");
+
+router.get("/", checkRole("admin"), async (req, res, next) => {
   try {
-    res.json({ msg: "Hello from user route" });
+    const result = await userController.getAll();
+    res.json({ data: result });
   } catch (error) {
     next(error);
   }

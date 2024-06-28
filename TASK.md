@@ -56,12 +56,25 @@ mvc => modules
 -> if result false, throw error [ email or password mismatched]
 -> Additional works
 -system needs to send something back to user[accesstoken]
--token creation
+-token creation(authorization)
 
+----Start the authorization process
+-npm install jsonwebtoken
+-jsonwebtoken , 2 utility function (token generate / token validate)
+-create a token js utility file
+
+-if user successfully login:
+
+- create the user payload for the jsonsign utility for signing
+- get the token and check the token in jwt.io website, check for expiration and data in JSON Object
+
+-send the token to the user through login api
+-send the token for every request in the header
+-checkrole middlewate update using token validate utility function
+-if false, permission denied error throw
+-if true, next()
 
 -cookie,session, json web token
-
-
 
 --add blog
 --view all blogs

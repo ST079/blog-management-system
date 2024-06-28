@@ -1,6 +1,8 @@
+require("dotenv").config();
 const bcrypt = require("bcryptjs");
+
 const hashPassword = (password) => {
-  return bcrypt.hashSync(password, 10);
+  return bcrypt.hashSync(password, Number(process.env.SALT_ROUND));
 };
 
 const comparePassword = (password, hash) => {

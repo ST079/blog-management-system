@@ -1,6 +1,7 @@
 const userModel = require("./user-model");
 const { mailer } = require("../../services/mailer");
 const { hashPassword, comparePassword } = require("../../utils/bcrypt");
+const { signJwt } = require("../../utils/token");
 
 //user
 const register = async (payload) => {
@@ -25,9 +26,15 @@ const login = async (payload) => {
   const result = comparePassword(password, hashPw);
   //if password match, login into the system(Access_token)
   if (!result)
-    throw new Error("Email or Password mismatched. Please try again!");
-  return result;
+    throw new Error("Email or Password mismatched.Please try again!");
   //access token
+  const userPayload = { name: user.name, email: user.email, role: user.roles };
+  const token = await signJwt(userPayload);
+  return token;
+};
+
+const getAll = () => {
+  return userModel.find();
 };
 
 const getById = (_id) => {
@@ -47,6 +54,7 @@ const changePassword = (userId, payload) => {};
 module.exports = {
   register,
   login,
+  getAll,
   getById,
   updateById,
   forgotPassword,
