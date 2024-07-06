@@ -1,14 +1,24 @@
 const { verifyJwt } = require("./token");
+const userModel = require("../modules/user/user-model");
 
 const checkRole = (sysRole) => {
-  return (req, res, next) => {
-    const { access_token } = req.headers || "";
-    if (!access_token) throw new Error("Access token is required");
-    const { data } = verifyJwt(access_token);
-    console.log(sysRole);
-    const isValidRole = data.role.some((roles) => sysRole.includes(roles));
-    if (!isValidRole) throw new Error("Permission Denied!");
-    next();
+  return async (req, res, next) => {
+    try {
+      const token = req.headers.access_token || "";
+      if (!token) throw new Error("Access token is required");
+      const data = verifyJwt(token);
+      if (!data) throw new Error("Permission Denied");
+      //check Role
+      const { data: user } = data;
+      const { email } = user;
+      const userData = await userModel.findOne({ email, isActive: true });
+      const isValidRole = sysRole.some((role) => userData.roles.includes(role));
+      if (!isValidRole) throw new Error("Permission Denied!");
+      req.currentUser = userData._id;
+      next();
+    } catch (error) {
+      next(error);
+    }
   };
 };
 

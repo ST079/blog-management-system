@@ -1,5 +1,5 @@
 const { required } = require("joi");
-const { Schema, modal } = require("mongoose");
+const { Schema, model } = require("mongoose");
 const { ObjectId } = Schema.Types;
 
 const bookmarkModel = new Schema({
@@ -7,4 +7,4 @@ const bookmarkModel = new Schema({
   user: { type: ObjectId, required: true, ref: "User" },
 });
 
-module.exports = new modal("Bookmark", bookmarkModel);
+module.exports = new model("Bookmark", bookmarkModel);

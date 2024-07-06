@@ -13,8 +13,8 @@ const userModel = new Schema({
   },
   token: String,
   isActive: { type: Boolean, required: true, default: true },
-  createdAt: { type: Date, degault: Date.now() },
-  updatedAt: { type: Date, degault: Date.now() },
+  createdAt: { type: Date, default: Date.now() },
+  updatedAt: { type: Date, default: Date.now() },
 });
 
 module.exports = new model("User", userModel);

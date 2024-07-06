@@ -8,9 +8,113 @@ const create = (payload) => {
 };
 
 //Search
-const getAll = () => {
-  return blogModel.find();
+const getAll = async (search, page = 1, limit = 20) => {
+  const query = [];
+  //search by name phone and email
+  if (search?.title) {
+    query.push(
+      [
+        {
+          $match: {
+            title: new RegExp(search?.title, "gi"),
+          },
+        },
+      ]
+    );
+  }
+
+  //default query
+  // query.push(
+  //   {
+
+  //     $facet: {
+  //       metaData: [
+  //         {
+  //           $count: "total",
+  //         },
+  //       ],
+  //       data: [
+  //         {
+  //           $skip: (+page - 1) * +limit,
+  //         },
+  //         { $limit: +limit },
+  //       ],
+  //     },
+  //   },
+  //   {
+  //     $addFields: {
+  //       total: {
+  //         $arrayElemAt: ["$metaData.total", 0],
+  //       },
+  //     },
+  //   },
+  //   {
+  //     $project: {
+  //       metaData: 0,
+  //     },
+  //   }
+  // );
+
+  query.push([
+    {
+      $lookup: {
+        from: "users",
+        localField: "author",
+        foreignField: "_id",
+        as: "author",
+      },
+    },
+    {
+      $unwind: {
+        path: "$author",
+        preserveNullAndEmptyArrays: false,
+      },
+    },
+    {
+      $project: {
+        title: 1,
+        author: "$author.name",
+        createdAt: 1,
+      },
+    },
+    {
+      $facet: {
+        metaData: [
+          {
+            $count: "total",
+          },
+        ],
+        data: [
+          {
+            $skip: (+page - 1) * +limit,
+          },
+          { $limit: +limit },
+        ],
+      },
+    },
+    {
+      $addFields: {
+        total: {
+          $arrayElemAt: ["$metaData.total", 0],
+        },
+      },
+    },
+    {
+      $project: {
+        metaData: 0,
+      },
+    },
+  ]);
+  //search,sort and filter
+  const result = await blogModel.aggregate(query);
+  return {
+    data: result[0].data,
+    total: result[0].total || 0,
+    page: +page,
+    limit: +limit,
+  };
 };
+
 const getById = (_id) => {
   return blogModel.findOne({ _id });
 };
@@ -31,7 +135,9 @@ const bookMark = (payload) => {
   bookmarkModel.create(payload);
 };
 
-const authorBlog = () => {};
+const authorBlog = (search) => {
+  return blogModel.aggregate();
+};
 module.exports = {
   create,
   getAll,

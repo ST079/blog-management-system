@@ -1,4 +1,4 @@
-const { Schema, modal } = require("mongoose");
+const { Schema, model } = require("mongoose");
 const { ObjectId } = Schema.Types;
 
 const blogModel = new Schema({
@@ -6,8 +6,8 @@ const blogModel = new Schema({
   slug: { type: String, required: true },
   content: { type: String, required: true },
   author: { type: ObjectId, ref: "User", required: true },
-  createdAt: { type: Date, degault: Date.now() },
-  updatedAt: { type: Date, degault: Date.now() },
+  createdAt: { type: Date, default: Date.now() },
+  updatedAt: { type: Date, default: Date.now() },
 });
 
-module.exports = new modal("Blog", blogModel);
+module.exports = new model("Blog", blogModel);

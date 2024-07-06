@@ -2,16 +2,7 @@ const router = require("express").Router();
 const userController = require("./user-controller");
 const { checkRole } = require("../../utils/session-manager");
 
-router.post("/", checkRole("admin"), async (req, res, next) => {
-  try {
-    const result = await userController.create(req.body);
-    res.json({ data: result });
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.post("/register", checkRole(["admin"]), async (req, res, next) => {
+router.post("/register", async (req, res, next) => {
   try {
     const result = await userController.register(req.body);
     res.json({ data: result });
@@ -69,18 +60,60 @@ router.post(
   }
 );
 
-router.post("/reset-password", checkRole(["admin"]), async (req, res, next) => {
+router.get("/", checkRole(["admin", "user"]), async (req, res, next) => {
   try {
-    const result = await userController.resetPassword(req.body);
+    const { name, phone, email, page, limit } = req.query;
+    const search = { name, phone, email };
+    const result = await userController.getAll(search, page, limit);
     res.json({ data: result });
   } catch (error) {
     next(error);
   }
 });
 
-router.get("/", checkRole(["admin", "user"]), async (req, res, next) => {
+router.post("/", checkRole(["admin"]), async (req, res, next) => {
   try {
-    const result = await userController.getAll();
+    const result = await userController.create(req.body);
+    res.json({ data: result });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/get-profile", checkRole(["user"]), async (req, res, next) => {
+  try {
+    const result = await userController.getProfile(req.currentUser);
+    res.json({ data: result });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put("/update-profile", checkRole(["user"]), async (req, res, next) => {
+  try {
+    const result = await userController.updateProfile(
+      req.currentUser,
+      req.body
+    );
+    res.json({ data: result });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/:id", checkRole(["admin"]), async (req, res, next) => {
+  try {
+    console.log(req.currentUser);
+    const result = await userController.getById(req.params.id);
+    res.json({ data: result });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put("/:id", checkRole(["admin"]), async (req, res, next) => {
+  try {
+    const result = await userController.updateById(req.params.id, req.body);
     res.json({ data: result });
   } catch (error) {
     next(error);
