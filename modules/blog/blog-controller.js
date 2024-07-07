@@ -8,21 +8,9 @@ const create = (payload) => {
 };
 
 //Search
-const getAll = async (search, page = 1, limit = 20) => {
+const getAll = async (page = 1, limit = 20) => {
   const query = [];
-  //search by name phone and email
-  if (search?.title) {
-    query.push(
-      [
-        {
-          $match: {
-            title: new RegExp(search?.title, "gi"),
-          },
-        },
-      ]
-    );
-  }
-
+ 
   //default query
   // query.push(
   //   {

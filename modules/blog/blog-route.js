@@ -1,11 +1,11 @@
 const router = require("express").Router();
 const blogController = require("./blog-controller");
+const { checkRole } = require("../../utils/session-manager");
 
-router.get("/", async (req, res, next) => {
+router.get("/", checkRole(["admin", "user"]), async (req, res, next) => {
   try {
-    const { title, author, page, limit } = req.query;
-    const search = { title, author };
-    const result = await blogController.getAll(search, page, limit);
+    const { page, limit } = req.query;
+    const result = await blogController.getAll(page, limit);
     res.json({ data: result });
   } catch (error) {
     next(error);

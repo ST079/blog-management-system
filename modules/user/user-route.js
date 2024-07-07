@@ -1,15 +1,43 @@
+const multer = require("multer");
 const router = require("express").Router();
+
 const userController = require("./user-controller");
 const { checkRole } = require("../../utils/session-manager");
 
-router.post("/register", async (req, res, next) => {
-  try {
-    const result = await userController.register(req.body);
-    res.json({ data: result });
-  } catch (error) {
-    next(error);
-  }
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./public/images/users");
+  },
+
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      file.fieldname +
+        "-" +
+        Date.now() +
+        "." +
+        file.originalname.split(".").pop()
+    );
+  },
 });
+
+const upload = multer({ storage: storage });
+
+router.post(
+  "/register",
+  upload.single("profilePic"),
+  async (req, res, next) => {
+    try {
+      const file = req.file;
+      if (!file) throw new Error("Please upload a file");
+      req.body.profilePic = file.path.replace("public", "").replace(/\\/g, "/");
+      const result = await userController.register(req.body);
+      res.json({ data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 router.post("/login", async (req, res, next) => {
   try {

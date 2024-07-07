@@ -11,6 +11,7 @@ const userModel = new Schema({
     default: "user",
     required: true,
   },
+  profilePic: String,
   token: String,
   isActive: { type: Boolean, required: true, default: true },
   createdAt: { type: Date, default: Date.now() },
