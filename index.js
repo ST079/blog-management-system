@@ -1,4 +1,5 @@
 require("dotenv").config();
+const cors = require("cors");
 const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
@@ -8,6 +9,7 @@ const errorMiddleware = require("./middlewares/error-middleware");
 
 const PORT = Number(process.env.PORT);
 
+app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 app.use(morgan("dev"));

@@ -28,9 +28,12 @@ router.post(
   upload.single("profilePic"),
   async (req, res, next) => {
     try {
-      const file = req.file;
-      if (!file) throw new Error("Please upload a file");
-      req.body.profilePic = file.path.replace("public", "").replace(/\\/g, "/");
+      // console.log(req.body);
+      if (req.file) {
+        req.body.profilePic = file.path
+          .replace("public", "")
+          .replace(/\\/g, "/");
+      }
       const result = await userController.register(req.body);
       res.json({ data: result });
     } catch (error) {

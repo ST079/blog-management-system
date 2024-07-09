@@ -24,6 +24,7 @@
                   class="form-control"
                   placeholder="Full Name"
                   aria-label="name"
+                  name="name"
                 />
               </div>
             </div>
@@ -33,6 +34,7 @@
                 class="form-control"
                 placeholder="Email Address"
                 aria-describedby="emailHelp"
+                name="email"
               />
               <div id="emailHelp" class="form-text">
                 We'll never share your email with anyone else.
@@ -43,6 +45,7 @@
                 type="password"
                 class="form-control"
                 placeholder="password"
+                name="password"
               />
             </div>
             <div class="mb-3 form-check">
@@ -56,15 +59,16 @@
               Submit
             </button>
           </form>
+          <div class="alert alert-success d-none" id="msg"></div>
         </div>
       </div>
     </div>
-    <script src="register.js"></script>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
     <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
+    <script src="register.js"></script>
   </body>
 </html>

@@ -9,12 +9,13 @@ const register = async (payload) => {
   payload.password = hashPassword(payload.password);
   const user = await userModel.create(payload);
   if (!user) throw new Error("Registeration Failed");
-  const result = await mailer(
-    user.email,
-    "User SignUp",
-    "User SignUp sucessfull :)"
-  );
-  if (result) return "Regestration Completed";
+  // const result = await mailer(
+  //   user.email,
+  //   "User SignUp",
+  //   "User SignUp sucessfull :)"
+  // );
+  // if (result) 
+  return "Regestration Completed";
 };
 
 const login = async (payload) => {
@@ -108,7 +109,7 @@ const getAll = async (search, page = 1, limit = 20) => {
   const result = await userModel.aggregate(query);
   return {
     data: result[0].data,
-    total: result[0].total||0,
+    total: result[0].total || 0,
     page: +page,
     limit: +limit,
   };
