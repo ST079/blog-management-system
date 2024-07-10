@@ -3,6 +3,7 @@ const router = require("express").Router();
 
 const userController = require("./user-controller");
 const { checkRole } = require("../../utils/session-manager");
+const { registerValidate } = require("./user-validation");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -26,6 +27,7 @@ const upload = multer({ storage: storage });
 router.post(
   "/register",
   upload.single("profilePic"),
+  registerValidate,
   async (req, res, next) => {
     try {
       // console.log(req.body);

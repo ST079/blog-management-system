@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bulb on/off</title>
+  </head>
+  <body>
+    <img
+      src="https://www.w3schools.com/js/pic_bulboff.gif"
+      id="bulb"
+      onclick="on_off()"
+      alt=""
+      srcset=""
+      style="cursor: pointer"
+    />
+
+    <script>
+      on_off = () => {
+        src = document.getElementById("bulb");
+        if (src.src.match("bulboff")) {
+          src.src = "https://www.w3schools.com/js/pic_bulbon.gif";
+        } else {
+          src.src = "https://www.w3schools.com/js/pic_bulboff.gif";
+        }
+      };
+    </script>
+  </body>
+</html>

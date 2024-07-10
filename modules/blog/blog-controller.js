@@ -1,70 +1,54 @@
 const blogModel = require("./blog-model");
 const bookmarkModel = require("../bookmark/bookmark-model");
+const { slugGenerator } = require("../../utils/textPraser");
 //  CRUD
 
 //create
 const create = (payload) => {
+  payload.slug = slugGenerator(payload.title);
   return blogModel.create(payload);
 };
 
-//Search
-const getAll = async (page = 1, limit = 20) => {
+const getPublishedBlogsOnly = async (search, page = 1, limit = 4) => {
   const query = [];
- 
-  //default query
-  // query.push(
-  //   {
+  if (search?.author) {
+    query.push(
+      {
+        $lookup: {
+          from: "users",
+          localField: "author",
+          foreignField: "_id",
+          as: "author",
+        },
+      },
+      {
+        $unwind: {
+          path: "$author",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $addFields: {
+          author: "$author.name",
+        },
+      },
+      {
+        $match: {
+          author: new RegExp(search?.author, "gi"),
+        },
+      }
+    );
+  }
 
-  //     $facet: {
-  //       metaData: [
-  //         {
-  //           $count: "total",
-  //         },
-  //       ],
-  //       data: [
-  //         {
-  //           $skip: (+page - 1) * +limit,
-  //         },
-  //         { $limit: +limit },
-  //       ],
-  //     },
-  //   },
-  //   {
-  //     $addFields: {
-  //       total: {
-  //         $arrayElemAt: ["$metaData.total", 0],
-  //       },
-  //     },
-  //   },
-  //   {
-  //     $project: {
-  //       metaData: 0,
-  //     },
-  //   }
-  // );
+  if (search?.title) {
+    query.push({
+      $match: {
+        title: new RegExp(search?.title, "gi"),
+      },
+    });
+  }
 
-  query.push([
-    {
-      $lookup: {
-        from: "users",
-        localField: "author",
-        foreignField: "_id",
-        as: "author",
-      },
-    },
-    {
-      $unwind: {
-        path: "$author",
-        preserveNullAndEmptyArrays: false,
-      },
-    },
-    {
-      $project: {
-        title: 1,
-        author: "$author.name",
-        createdAt: 1,
-      },
-    },
+  query.push(
     {
       $facet: {
         metaData: [
@@ -91,8 +75,8 @@ const getAll = async (page = 1, limit = 20) => {
       $project: {
         metaData: 0,
       },
-    },
-  ]);
+    }
+  );
   //search,sort and filter
   const result = await blogModel.aggregate(query);
   return {
@@ -103,35 +87,4 @@ const getAll = async (page = 1, limit = 20) => {
   };
 };
 
-const getById = (_id) => {
-  return blogModel.findOne({ _id });
-};
-
-//update
-const updateById = (_id, payload) => {
-  return blogModel.updateOne({ _id }, payload);
-};
-
-//delete
-const deleteById = (_id) => {
-  return blogModel.deleteOne({ _id });
-};
-
-const bookMark = (payload) => {
-  const { blogs, user } = payload;
-  if (!blogs.length > 0 || !user) throw new Error("Blogs and user missing");
-  bookmarkModel.create(payload);
-};
-
-const authorBlog = (search) => {
-  return blogModel.aggregate();
-};
-module.exports = {
-  create,
-  getAll,
-  getById,
-  updateById,
-  deleteById,
-  bookMark,
-  authorBlog,
-};
+module.exports = { create, getPublishedBlogsOnly };
